@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,19 +28,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="min-h-screen flex flex-col">
-          <header className="sticky top-0 z-20 backdrop-blur bg-background/70 border-b border-black/5 dark:border-white/10">
-            <div className="mx-auto max-w-6xl px-6 py-3 flex items-center justify-between">
-              <Link href="/" className="text-sm font-semibold tracking-tight">Palmier</Link>
-              <nav className="flex items-center gap-4 text-xs text-foreground/70">
-                <Link href="/" className="hover:text-foreground">Home</Link>
-                <Link href="/c/demo/preview" className="hover:text-foreground">One‑sheet</Link>
-              </nav>
-            </div>
-          </header>
           <main className="flex-1">{children}</main>
-          <footer className="border-t border-black/5 dark:border-white/10">
-            <div className="mx-auto max-w-6xl px-6 py-6 text-xs text-foreground/60">© {new Date().getFullYear()} Palmier</div>
-          </footer>
         </div>
       </body>
     </html>

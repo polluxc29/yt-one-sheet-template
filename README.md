@@ -1,11 +1,17 @@
 ## YouTube One‑Sheet (Demo)
 
-A minimal, Foam‑like public one‑sheet for a creator, built with Next.js App Router and Tailwind v4. This demo hardcodes YouTube stats and recent videos so the UI can be previewed now and wired to real data later.
+A minimal, Foam‑like public one‑sheet for creators, built with Next.js App Router and Tailwind v4. This demo shows multiple creator profiles in a roster view and individual one-sheets, ready for YouTube API integration.
 
-### What’s included
+### What's included
 - **Public one‑sheet route**: `app/c/[creatorId]/[token]/page.tsx`
-- **Reusable UI components**: `app/components/StatBlock.tsx`, `app/components/VideoCard.tsx`
-- **Site chrome**: simple header/footer in `app/layout.tsx`
+- **Creator roster dashboard**: `app/roster/page.tsx` - Grid view of all creators
+- **API endpoint**: `app/api/creators/route.ts` - Returns creator data (currently demo, ready for YouTube API)
+- **Reusable UI components**: 
+  - `app/components/StatBlock.tsx` - Stat tiles
+  - `app/components/VideoCard.tsx` - Video cards  
+  - `app/components/CreatorCard.tsx` - Compact creator cards for roster
+- **Type definitions**: `types/youtube.ts` - YouTube Data API v3 types
+- **Demo data**: `app/data/creators.ts` - Sample creator profiles
 
 ### Demo data (matches YouTube API columns)
 - **Channel KPIs** (from `channels.list` and computed):
@@ -22,40 +28,69 @@ A minimal, Foam‑like public one‑sheet for a creator, built with Next.js App 
    - `npm install`
 2. Run the dev server
    - `npm run dev`
-3. Open the demo route
-   - Visit `http://localhost:3000/c/demo/preview`
+3. View the demo
+   - **Roster**: Visit `http://localhost:3000/roster` (default)
+   - **Individual one-sheet**: Visit `http://localhost:3000/c/demo/preview`
 
 ### Project structure
-- `app/layout.tsx` — site chrome
-- `app/page.tsx` — default starter page
-- `app/c/[creatorId]/[token]/page.tsx` — one‑sheet UI (hardcoded data)
-- `app/components/StatBlock.tsx` — small stat tile
-- `app/components/VideoCard.tsx` — recent video card
+- `app/layout.tsx` — minimal layout (no header/footer)
+- `app/page.tsx` — redirects to `/roster`
+- `app/roster/page.tsx` — creator roster dashboard
+- `app/c/[creatorId]/[token]/page.tsx` — individual one‑sheet UI
+- `app/api/creators/route.ts` — API endpoint for creator data
+- `app/components/` — reusable UI components
+- `types/youtube.ts` — TypeScript types matching YouTube API
+- `app/data/creators.ts` — demo creator data
+
+### Current system architecture
+```
+Frontend (Next.js) ←→ API Endpoint (/api/creators) ←→ Demo Data
+                                    ↓
+                              YouTube API (ready to integrate)
+```
+
+- **Roster page** fetches from `/api/creators`
+- **API currently returns** hardcoded demo data
+- **Ready for backend** - just uncomment YouTube API code in the route
 
 ### Future integration (drop‑in)
-When backend is ready, replace hardcoded data in `app/c/[creatorId]/[token]/page.tsx` with a fetch to your API:
+When backend is ready, the API route will:
+1. **Fetch creator profiles** from your database
+2. **Call YouTube Data API v3** for each creator:
+   - `channels.list` (statistics, snippet)
+   - `search.list` + `videos.list` (recent videos)
+   - `analytics.reports` (geographic, demographic data)
+3. **Return data** in the exact format the UI expects
 
-```ts
-const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/youtube/stats?creatorId=${creatorId}`, { cache: "no-store" });
-const { profile, stats, videos } = await res.json();
-```
-
-Expected response shape (example):
+Expected API response shape:
 ```json
-{
-  "profile": {"avatarUrl":"...","name":"...","handle":"@...","links":{"youtube":"...","instagram":"...","email":"mailto:..."}},
-  "stats": {
-    "subs": 1240000,
-    "lifetimeViews": 152345678,
-    "views30d": 3420000,
-    "avgViewsLast6": 585000,
-    "topGeos": [{"country":"US","percent":42}],
-    "audience": {"female":38,"male":62,"ages":[{"range":"18-24","percent":28}]}
-  },
-  "videos": [{"id":"abc123","title":"...","publishedAt":"2025-07-12","thumbnails":{"medium":{"url":"...","width":320,"height":180}},"stats":{"views":712000}}]
-}
+[
+  {
+    "profile": {"avatarUrl":"...","name":"...","handle":"@...","links":{"youtube":"...","instagram":"...","email":"mailto:..."}},
+    "stats": {
+      "subs": 1240000,
+      "lifetimeViews": 152345678,
+      "views30d": 3420000,
+      "avgViewsLast6": 585000,
+      "topGeos": [{"country":"US","percent":42}],
+      "audience": {"female":38,"male":62,"ages":[{"range":"18-24","percent":28}]}
+    },
+    "videos": [{"id":"abc123","title":"...","publishedAt":"2025-07-12","thumbnails":{"medium":{"url":"...","width":320,"height":180}},"stats":{"views":712000}}]
+  }
+]
 ```
+
+### Features
+- **Responsive grid layout** for creator roster
+- **Compact creator cards** with key metrics
+- **Individual one-sheets** with detailed stats
+- **Copy link functionality** for sharing
+- **Type-safe** throughout with YouTube API types
+- **Server-side rendering** with Next.js App Router
+- **Built-in caching** and error handling
 
 ### Notes
 - All values are currently hardcoded for demo. No OAuth or API calls are required to run.
 - UI aims for a clean, Foam‑like aesthetic and can be extended with brand theming.
+- The roster automatically populates from the API endpoint.
+- When backend is ready, creators will be fetched from YouTube API in real-time.
