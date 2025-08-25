@@ -1,4 +1,4 @@
-## Palmier — YouTube One‑Sheet (Demo)
+## YouTube One‑Sheet (Demo)
 
 A minimal, Foam‑like public one‑sheet for a creator, built with Next.js App Router and Tailwind v4. This demo hardcodes YouTube stats and recent videos so the UI can be previewed now and wired to real data later.
 
